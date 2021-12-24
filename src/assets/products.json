@@ -2,22 +2,44 @@
 
         "products": [
             {
-                "productproductId": 1,
-                "productproductName": "Product 1",
-                "price": 1.00,
-                "quantity": 1
+                "productId": 1,
+                "productName": "Just Milk!",
+                "price": 3.97,
+                "discount": 2.94,
+                "saleQuantityIncrement": 2,
+                "quantity": 1,
+                "flag": 0,
+                "description": "It's delicious! Will make you smile."
             },
             {
                 "productId": 2,
-                "productName": "Product 2",
-                "price": 2.00,
-                "quantity": 1
+                "productName": "Just Bread!",
+                "price": 2.17,
+                "discount": 0.51,
+                "saleQuantityIncrement": 3,
+                "flag": 0,
+                "quantity": 1,
+                "description": "It's delicious! Will make you smile."
             },
             {
                 "productId": 3,
-                "productName": "Product 3",
+                "productName": "Yumm Bananas!",
                 "price": 3.00,
-                "quantity": 1
+                "salePrice": 2.00,
+                "saleQuantityIncrement": 0,
+                "flag": 0,
+                "quantity": 1,
+                "description": "Not in their pijamas thought."
+            },
+            {
+                "productId": 4,
+                "productName": "Big Red Apple!",
+                "price": 4.00,
+                "salePrice": 3.00,
+                "saleQuantityIncrement": 0,
+                "flag": 0,
+                "quantity": 1,
+                "description": "It's delicious! Will make you smile."
             }
         ]
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState}from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -78,14 +78,14 @@ export default function Product(props) {
           </Typography>
           <div className={classes.priceText}>
           <Typography  variant="body1" color="textPrimary" component="h3">
-            {price}
+            ${price}
           </Typography>
           </div>
         </CardContent>
       </CardActionArea>
       <CardActions>
         <Button onClick={()=>addToCart(props.product)} size="small" color="primary">
-          Add to Cart
+         {cartProducts?.find(item => item.productId === productId) ? "Add More" : "Add to Cart"} 
         </Button>
       </CardActions>
     </Card>

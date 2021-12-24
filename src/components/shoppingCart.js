@@ -69,7 +69,11 @@ export default function ShoppingCart() {
   }
 
   const handleSubstractProductQuantity = (product) => {
+    if(product.quantity === 1){
+      dispatch({type: 'DELETE_PRODUCT_FROM_CART', payload: product.productId});}
+      else{
     dispatch({type: 'SUBSTRACT_PRODUCT_QUANTITY', payload: product.productId})
+      }
   }
 
   
@@ -134,10 +138,6 @@ export default function ShoppingCart() {
           </List>
           <Divider />
           <List>
-            <ListItem button>
-                <ListItemIcon><InboxIcon /></ListItemIcon>
-                <ListItemText primary="SubTotal = " secondary={`$${sub_total}`}/>
-              </ListItem>
             <ListItem button>
                 <ListItemIcon><InboxIcon /></ListItemIcon>
                 <ListItemText primary="Discount = " secondary={`$${discount}`}/>
