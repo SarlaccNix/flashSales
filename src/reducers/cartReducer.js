@@ -38,13 +38,11 @@ export const cartReducer = (state = initialState, action) => {
           state.total - currentProduct[0].price * currentProduct[0].quantity,
       };
     case ADD_PRODUCT_QUANTITY:
-      // let discount;
       let totalDiscount = 0;
       let currentProductAdd = state.products.filter(
         (product) => product.productId === action.payload
       );
       let currentProductFlag = currentProductAdd[0].flag;
-      console.log("CurrentProductAdd", currentProductAdd[0].saleQuantityIncrement);
       switch (currentProductAdd[0].saleQuantityIncrement) {
         case 2:
           if ((currentProductAdd[0].quantity + 1) % 2 === 0) {
@@ -87,11 +85,11 @@ export const cartReducer = (state = initialState, action) => {
               : item
           ),
           discount: state.discount + totalDiscount,
-          total:
+          total: RoundFixed2(
             state.total -
             totalDiscount +
             state.products.find((item) => item.productId === action.payload)
-              .price,
+              .price),
         };
           break;
         default:
@@ -106,24 +104,13 @@ export const cartReducer = (state = initialState, action) => {
                 : item
             ),
             discount: state.discount,
-            total:
+            total: RoundFixed2(
               state.total +
               state.products.find((item) => item.productId === action.payload)
-                .price,
+                .price),
           };
           break;
       }
-      // if (currentProductAdd[0].saleQuantityIncrement > 0) {
-      //   if ((currentProductAdd[0].quantity + 1) % 2 === 0) {
-      //     currentProductFlag = +1;
-      //     totalDiscount = currentProductFlag * currentProductAdd[0].discount;
-      //   } else if (
-      //     currentProductAdd[0].quantity + 1 > 1 && currentProductAdd[0].saleQuantityIncrement
-      //   ) {
-      //     currentProductFlag = +1;
-      //     totalDiscount = currentProductFlag * currentProductAdd[0].discount;
-      //   }
- 
 
     case SUBSTRACT_PRODUCT_QUANTITY:
       return {
