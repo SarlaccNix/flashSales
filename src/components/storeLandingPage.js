@@ -1,7 +1,3 @@
-// Header
-// Shopping Cart
-// Products
-
 import React from "react";
 import ShoppingCart from "./shoppingCart";
 

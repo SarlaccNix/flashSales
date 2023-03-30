@@ -2,8 +2,8 @@ import { CollectionsBookmarkOutlined } from "@material-ui/icons";
 import {
   ADD_PRODUCT_TO_CART,
   DELETE_PRODUCT_FROM_CART,
-  ADD_PRODUCT_QUANTITY,
   SUBSTRACT_PRODUCT_QUANTITY,
+  RESET_CART,
 } from "../actions/types";
 
 const initialState = {
@@ -19,100 +19,86 @@ const RoundFixed2 = (number) => {
 
 export const cartReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ADD_PRODUCT_TO_CART:
-      return {
-        ...state,
-        products: [...state.products, action.payload],
-        total: state.total + action.payload.price,
-      };
     case DELETE_PRODUCT_FROM_CART:
-      let currentProduct = state.products.filter(
-        (product) => product.productId === action.payload
+      let productToDelete = state.products.includes(
+        (product) => product.productId === action.payload.productId
+      );
+      let discountGroups = Math.floor(
+        productToDelete.quantity / productToDelete.saleQuantityIncrement
+      );
+      let remainingProductsAmount =
+        productToDelete.quantity % productToDelete.saleQuantityIncrement > 0
+          ? (productToDelete.quantity % productToDelete.saleQuantityIncrement) *
+            productToDelete.price
+          : null;
+      let discountToRemove = discountGroups * productToDelete.discount;
+      console.log("disc to rem", discountToRemove);
+      console.log(
+        "remaining to remove",
+        remainingProductsAmount * productToDelete.price
       );
       return {
         ...state,
         products: state.products.filter(
           (product) => product.productId !== action.payload
         ),
-        total:
-          state.total - currentProduct[0].price * currentProduct[0].quantity,
+        discount: state.discount - discountToRemove,
+        total: state.total - discountToRemove - remainingProductsAmount,
       };
-    case ADD_PRODUCT_QUANTITY:
-      let totalDiscount = 0;
-      let currentProductAdd = state.products.filter(
-        (product) => product.productId === action.payload
-      );
-      let currentProductFlag = currentProductAdd[0].flag;
-      switch (currentProductAdd[0].saleQuantityIncrement) {
-        case 2:
-          if ((currentProductAdd[0].quantity + 1) % 2 === 0) {
-            currentProductFlag = +1;
-            totalDiscount = currentProductFlag * currentProductAdd[0].discount;
-          }
-          return {
-            ...state,
-            products: state.products.map((item) =>
-              item.productId === action.payload
-                ? {
-                    ...item,
-                    quantity: item.quantity + 1,
-                    flag: currentProductFlag,
-                  }
-                : item
-            ),
-            discount: state.discount + totalDiscount,
-            total: RoundFixed2(
-              state.total -
-                totalDiscount +
-                state.products.find((item) => item.productId === action.payload)
-                  .price
-            ),
-          };
-          break;
-        case 3: 
-        if ((currentProductAdd[0].quantity + 1) % 3 > 1) {
-          currentProductFlag = +1;
-          totalDiscount = currentProductFlag * currentProductAdd[0].discount;
-        }
-        return {
-          ...state,
-          products: state.products.map((item) =>
-            item.productId === action.payload
-              ? {
-                  ...item,
-                  quantity: item.quantity + 1,
-                }
-              : item
-          ),
-          discount: state.discount + totalDiscount,
-          total: RoundFixed2(
-            state.total -
-            totalDiscount +
-            state.products.find((item) => item.productId === action.payload)
-              .price),
-        };
-          break;
-        default:
-          return {
-            ...state,
-            products: state.products.map((item) =>
-              item.productId === action.payload
-                ? {
-                    ...item,
-                    quantity: item.quantity + 1,
-                  }
-                : item
-            ),
-            discount: state.discount,
-            total: RoundFixed2(
-              state.total +
-              state.products.find((item) => item.productId === action.payload)
-                .price),
-          };
-          break;
+    case ADD_PRODUCT_TO_CART:
+      let totalDiscount = state.discount;
+      let currentProductToAdd = action.payload;
+      let addPrice = currentProductToAdd.price;
+      let currentQty = 0;
+      let currentTotal;
+      if (
+        state.products.some(
+          (product) => product.productId === action.payload.productId
+        )
+      ) {
+        currentQty = state.products.find(
+          (product) => product.productId === action.payload.productId
+        ).quantity;
       }
+      const totalQty = ++currentQty;
+      if (totalQty % currentProductToAdd.saleQuantityIncrement === 0) {
+        console.log(
+          "What????",
+          totalQty % currentProductToAdd.saleQuantityIncrement,
+          currentProductToAdd.saleQuantityIncrement
+        );
+        totalDiscount = state.discount + currentProductToAdd.discount;
+        currentTotal = RoundFixed2(
+          state.total + addPrice - currentProductToAdd.discount
+        );
+      } else {
+        addPrice = currentProductToAdd.price;
+        currentTotal = RoundFixed2(state.total + addPrice);
+      }
+      return {
+        ...state,
+        products: state.products.some(
+          (item) => item.productId === currentProductToAdd.productId
+        )
+          ? state.products.map((item) =>
+              item.productId === currentProductToAdd.productId
+                ? { ...item, quantity: totalQty }
+                : item
+            )
+          : [...state.products, currentProductToAdd],
+        discount: RoundFixed2(totalDiscount),
+        total: currentTotal,
+      };
 
     case SUBSTRACT_PRODUCT_QUANTITY:
+      const selectedProduct = state.products.find(
+        (item) => item.productId === action.payload
+      );
+      let priceSubstract = 0;
+      selectedProduct.flag === 1
+        ? (priceSubstract = selectedProduct.salePrice)
+        : (priceSubstract = selectedProduct.price);
+
       return {
         ...state,
         products: state.products.map((item) =>
@@ -123,11 +109,10 @@ export const cartReducer = (state = initialState, action) => {
               }
             : item
         ),
-        total:
-          state.total -
-          state.products.find((item) => item.productId === action.payload)
-            .price,
+        total: state.total - priceSubstract,
       };
+    case RESET_CART:
+      return { ...initialState };
     default:
       return state;
   }

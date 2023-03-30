@@ -1,4 +1,4 @@
-import React, {useState}from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
@@ -21,30 +21,30 @@ const useStyles = makeStyles({
   },
   media: {
     height: 140,
-    paddingTop: "56.25%"
+    paddingTop: "56.25%",
   },
   priceText: {
-      flex: 1,
-      justifyContent: "flex-end",
-  }
+    flex: 1,
+    justifyContent: "flex-end",
+  },
 });
 
-export default function Product(props) {
+const Product = React.memo((props) => {
   const classes = useStyles();
   const { productName, productId, price, salePrice, description } =
     props.product;
-  const cartProducts = useSelector(state => state.cart.products);
+  const cartProducts = useSelector((state) => state.cart.products);
+  console.log("Cart Products", cartProducts);
+  console.log(
+    "Find",
+    cartProducts?.includes((item) => item.productId === productId)
+  );
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const addToCart = (product) => {
-      if(cartProducts?.find(item => item.productId === product.productId)){
-      dispatch ({type: 'ADD_PRODUCT_QUANTITY', payload: product.productId});
-      }
-      else{
-        dispatch({type: 'ADD_PRODUCT_TO_CART', payload: product});
-      }
-    }
+  const addToCart = (product) => {
+    dispatch({ type: "ADD_PRODUCT_TO_CART", payload: product });
+  };
 
   const productImage = () => {
     switch (productId) {
@@ -56,38 +56,50 @@ export default function Product(props) {
         return Bananas;
       case 4:
         return Apple;
+      default:
+        break;
     }
   };
 
   const image = productImage();
 
   return (
-    <Card className={classes.root}>
-      <CardActionArea>
-        <CardMedia
-          className={classes.media}
-          image={image}
-          title={productName}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {productName}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {description}
-          </Typography>
-          <div className={classes.priceText}>
-          <Typography  variant="body1" color="textPrimary" component="h3">
-            ${price}
-          </Typography>
-          </div>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-        <Button onClick={()=>addToCart(props.product)} size="small" color="primary">
-         {cartProducts?.find(item => item.productId === productId) ? "Add More" : "Add to Cart"} 
-        </Button>
-      </CardActions>
-    </Card>
+    <>
+      <Card className={classes.root}>
+        <CardActionArea>
+          <CardMedia
+            className={classes.media}
+            image={image}
+            title={productName}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {productName}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {description}
+            </Typography>
+            <div className={classes.priceText}>
+              <Typography variant="body1" color="textPrimary" component="h3">
+                ${price}
+              </Typography>
+            </div>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Button
+            onClick={() => addToCart(props.product)}
+            size="small"
+            color="primary"
+          >
+            {cartProducts?.some((item) => item.productId === productId)
+              ? "Add More"
+              : "Add to Cart"}
+          </Button>
+        </CardActions>
+      </Card>
+    </>
   );
-}
+});
+
+export default Product;

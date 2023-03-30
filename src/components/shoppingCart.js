@@ -1,35 +1,39 @@
-import React, {useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import storeProducts from '../assets/products.json';
-import LocalMallOutlinedIcon from '@material-ui/icons/LocalMallOutlined';
-import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
-import { AddProductQuantity, SubstractProductQuantity } from '../actions/cartActions';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import Drawer from "@material-ui/core/Drawer";
+import AppBar from "@material-ui/core/AppBar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Toolbar from "@material-ui/core/Toolbar";
+import List from "@material-ui/core/List";
+import Typography from "@material-ui/core/Typography";
+import Divider from "@material-ui/core/Divider";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import RemoveShoppingCartIcon from "@material-ui/icons/RemoveShoppingCart";
+import InboxIcon from "@material-ui/icons/MoveToInbox";
+import MailIcon from "@material-ui/icons/Mail";
+import storeProducts from "../assets/products.json";
+import LocalMallOutlinedIcon from "@material-ui/icons/LocalMallOutlined";
+import HighlightOffOutlinedIcon from "@material-ui/icons/HighlightOffOutlined";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
+import {
+  AddProductQuantity,
+  SubstractProductQuantity,
+} from "../actions/cartActions";
 
-import Product from './product'
+import Product from "./product";
 
 const drawerWidth = 400;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: "flex",
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -42,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
   },
   drawerContainer: {
-    overflow: 'auto',
+    overflow: "auto",
   },
   content: {
     flexGrow: 1,
@@ -52,33 +56,41 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ShoppingCart() {
   const classes = useStyles();
-  const {products, sub_total, discount, total} = useSelector(state => state.cart);
+  const { products, sub_total, discount, total } = useSelector(
+    (state) => state.cart
+  );
 
   const dispatch = useDispatch();
 
   const addToCart = (product) => {
-    dispatch({type: 'ADD_PRODUCT_TO_CART', payload: product});
-  }
+    dispatch({ type: "ADD_PRODUCT_TO_CART", payload: product });
+  };
+
+  const resetCart = () => {
+    dispatch({ type: "RESET_CART" });
+  };
 
   const deleteFromCart = (product) => {
-    dispatch({type: 'DELETE_PRODUCT_FROM_CART', payload: product.productId});
-  }
+    dispatch({ type: "DELETE_PRODUCT_FROM_CART", payload: product.productId });
+  };
 
   const handleAddProductQuantity = (product) => {
-    dispatch({type: 'ADD_PRODUCT_QUANTITY', payload: product.productId})    
-  }
+    dispatch({ type: "ADD_PRODUCT_QUANTITY", payload: product.productId });
+  };
 
   const handleSubstractProductQuantity = (product) => {
-    if(product.quantity === 1){
-      dispatch({type: 'DELETE_PRODUCT_FROM_CART', payload: product.productId});}
-      else{
-    dispatch({type: 'SUBSTRACT_PRODUCT_QUANTITY', payload: product.productId})
-      }
-  }
-
-  
-  
-  console.log("products", products);
+    if (product.quantity === 1) {
+      dispatch({
+        type: "DELETE_PRODUCT_FROM_CART",
+        payload: product.productId,
+      });
+    } else {
+      dispatch({
+        type: "SUBSTRACT_PRODUCT_QUANTITY",
+        payload: product.productId,
+      });
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -90,19 +102,21 @@ export default function ShoppingCart() {
           </Typography>
         </Toolbar>
       </AppBar>
-     
+
       <main className={classes.content}>
         <Toolbar />
         <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={5}
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={5}
         >
-            {storeProducts.products.map(storeProduct => (
-             <Grid item xs><Product product={storeProduct} handleAddProduct={addToCart}/></Grid>
-            ))}
+          {storeProducts.products.map((storeProduct) => (
+            <Grid item xs>
+              <Product product={storeProduct} handleAddProduct={addToCart} />
+            </Grid>
+          ))}
         </Grid>
       </main>
       <Drawer
@@ -111,41 +125,62 @@ export default function ShoppingCart() {
         classes={{
           paper: classes.drawerPaper,
         }}
-        anchor='right'
+        anchor="right"
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List>
-            {products?.length > 0 ? products.map((product, index) => (
-              <ListItem button key={index}>
-                <ListItemIcon><LocalMallOutlinedIcon/> </ListItemIcon>
-                <ListItemText primary={product.productName} />
-                <IconButton onClick={()=>handleAddProductQuantity(product)}><AddCircleOutlineIcon/> </IconButton>
-                <Typography >{product.quantity}</Typography>
+            {products?.length > 0 ? (
+              products.map((product, index) => (
+                <ListItem button key={index}>
+                  <ListItemIcon>
+                    <LocalMallOutlinedIcon />{" "}
+                  </ListItemIcon>
+                  <ListItemText primary={product.productName} />
+                  <IconButton onClick={() => addToCart(product)}>
+                    <AddCircleOutlineIcon />{" "}
+                  </IconButton>
+                  <Typography>{product.quantity}</Typography>
 
-                <IconButton onClick={()=>handleSubstractProductQuantity(product)}><RemoveCircleOutlineIcon/> </IconButton>
+                  <IconButton
+                    onClick={() => handleSubstractProductQuantity(product)}
+                  >
+                    <RemoveCircleOutlineIcon />{" "}
+                  </IconButton>
 
-
-                <IconButton onClick={()=>deleteFromCart(product)}><HighlightOffOutlinedIcon/> </IconButton>
-
+                  <IconButton onClick={() => deleteFromCart(product)}>
+                    <HighlightOffOutlinedIcon />{" "}
+                  </IconButton>
+                </ListItem>
+              ))
+            ) : (
+              <ListItem button>
+                <Typography variant="s1">
+                  Your Shopping Cart Is Empty!
+                </Typography>
               </ListItem>
-            ))
-            :
-            <ListItem button>
-            <Typography variant="s1">Your Shopping Cart Is Empty!</Typography>
-            </ListItem>
-            }
+            )}
           </List>
           <Divider />
           <List>
-            <ListItem button>
-                <ListItemIcon><InboxIcon /></ListItemIcon>
-                <ListItemText primary="Discount = " secondary={`$${discount}`}/>
+            {products?.length > 0 || products != null ? (
+              <ListItem button onClick={() => resetCart()}>
+                <Typography variant="s1">Delete Shopping Cart</Typography>
+                <RemoveShoppingCartIcon />
               </ListItem>
-            <ListItem button>
-                <ListItemIcon><InboxIcon /></ListItemIcon>
-                <ListItemText primary="Total = " secondary={`$${total}`}/>
-              </ListItem>
+            ) : null}
+            <ListItem>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Discount = " secondary={`$${discount}`} />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Total = " secondary={`$${total}`} />
+            </ListItem>
           </List>
         </div>
       </Drawer>
